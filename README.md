@@ -13,11 +13,12 @@ WIMyFo = What In My Folder
 
 ## About The Project
 
-It is a project I'd had in mind for a long time, but also challenge launched by the P. (PierreHvrd). 
+It is a project I've had in mind for a long time, but also challenge from "le P." ([@PierreHvrd](https://github.com/PierreHvrd)). 
+
 
 Each of us had to create it on our own under 9 days.
 
-Specifications : 
+### Specifications
 > - allow user to select the folder he want to analyse
 > - give number of files of each type
 > - give total number of files and subfolders

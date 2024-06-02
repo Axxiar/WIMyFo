@@ -162,8 +162,8 @@ class StatsTab(tk.Frame):
             self.details_frame.pack(expand=True, fill=BOTH)
             self.files_frame.pack(expand=True, fill=BOTH, side=LEFT, padx=10, pady=10)
             self.folders_frame.pack(expand=True, fill=BOTH, side=RIGHT, padx=10, pady=10)
-            self.mainleft_frame.pack(fill=X, side=LEFT, padx=5, pady=5)
-            self.mainright_frame.pack(fill=X, side=RIGHT, padx=5, pady=5)
+            self.mainleft_frame.pack(fill=Y, side=LEFT, padx=5, pady=5)
+            self.mainright_frame.pack(fill=Y, side=RIGHT, padx=5, pady=(0,5))
 
             self.path_label.pack()
             self.cat_label.pack(side=LEFT)
@@ -193,7 +193,7 @@ class DirInfo():
         #----- Date Creation ---------------------
         self.ct_date.set(f"Creation date: {date.fromtimestamp(os.path.getctime(pth))}")
         #----- Number of direct subdirectory -----
-        self.subdirs_total.set(f"Subfolders: {len(self.content["dir"])}")
+        self.subdirs_total.set(f"Subfolders: {len(self.content["dir"][0])}")
         #----- Total of file ---------------------
         self.files_total.set(f"Files: {self.get_files_total()}")
         #-----------------------------------------
