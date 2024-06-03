@@ -16,7 +16,7 @@ class WimyfoApp(ttk.Window):
         super().__init__(themename="superhero")
         self.dirpath = ttk.StringVar(value=dirpath)
         self.title("WIMyFo")
-        self.window_sizes = [["900x290", (700,200)],["1170x660",(500,500)]]
+        self.window_sizes = [["900x290", (700,200)],["1170x660",(700,500)]]
         self.geometry(self.window_sizes[0][0])
         self.minsize(*self.window_sizes[0][1])
 
@@ -28,15 +28,12 @@ class WimyfoApp(ttk.Window):
         self.display()
         
 
-    def change_tab(self, num):
-        """num:
-            0 = menu_tab 
-            1 = stats_tab
-        """
-        self.notebook.select(num)
-        self.geometry(self.window_sizes[num][0])
-        self.minsize(*self.window_sizes[num][1])
+    def change_tab(self):
+        self.notebook.select(1)
+        self.geometry(self.window_sizes[1][0])
+        self.minsize(*self.window_sizes[1][1])
         self.stats_tab.dirinfo.update(self.dirpath.get())
+        self.stats_tab.add_details()
         self.stats_tab.display(True)
 
 
@@ -88,7 +85,7 @@ class MenuTab(ttk.Frame):
     
     def valid_choosen_dir(self):
         if os.path.isdir(self.main_window.dirpath.get()):
-            self.main_window.change_tab(1)
+            self.main_window.change_tab()
         else:
             raise Exception("not a dir")
 
@@ -106,6 +103,8 @@ class StatsTab(tk.Frame):
         super().__init__(parent)
         self.main_window = main_window
         self.dirinfo = DirInfo()
+        self.ext_progbars_list = []
+        self.ext_labels_list = []
 
         # No Folder text
         self.placeholder_label = ttk.Label(self,text="Select a folder first",bootstyle=DANGER, font=APP_FONT(12))
@@ -118,7 +117,7 @@ class StatsTab(tk.Frame):
         self.folders_frame = ttk.LabelFrame(self.details_frame, text="FOLDERS", bootstyle=INFO)
 
         self.mainleft_frame = ttk.Frame(self.maininfo_frame)
-        self.mainright_frame = ttk.Frame(self.maininfo_frame)
+        self.mainright_frame = ttk.Frame(self.maininfo_frame, bootstyle=DANGER)
 
 
         # -- mainleft
@@ -132,19 +131,31 @@ class StatsTab(tk.Frame):
         )
 
         # -- mainright
-        self.totalsize_label = ttk.Label(self.mainright_frame, text="Total Size: None")
+        self.totalsize_label = ttk.Label(self.mainright_frame, width=20, text="Total Size: None")
         self.subfolders_label = ttk.Label(
             self.mainright_frame,
             textvariable=self.dirinfo.subdirs_total,
-            anchor=E,
-            justify=RIGHT
+            width=20,
+            anchor=W
         )
         self.files_label = ttk.Label(
             self.mainright_frame,
             textvariable=self.dirinfo.files_total,
-            anchor=E,
-            justify=RIGHT
+            width=20,
+            anchor=W
         )
+
+    
+    def add_details(self):
+        for ext,files in self.dirinfo.content_files.items():
+            label = ttk.Label(self.files_frame, text=ext)
+            progbar = ttk.Progressbar(self.files_frame, bootstyle="warning-striped", mode=DETERMINATE, value=50)
+            self.ext_progbars_list.append(progbar)
+            self.ext_labels_list.append(label)
+            print(f"Stat for {ext}:", end="\n\t")
+            for file in files[0]:
+                print(file, end=", ")
+            print()
 
 
     def display(self, folder_selected):
@@ -171,6 +182,10 @@ class StatsTab(tk.Frame):
             self.files_label.pack()
             self.subfolders_label.pack()
 
+            for label,progbar in list(zip(self.ext_labels_list,self.ext_progbars_list)):
+                label.pack(pady=(5,0))
+                progbar.pack(pady=(0,5), padx=20 ,fill=X)
+
 
 # SCRIPT CLASSES
 class DirInfo():
@@ -179,7 +194,7 @@ class DirInfo():
     def __init__(self):
         self.name = ttk.StringVar(value="None")
         self.path = ttk.StringVar(value="None")
-        self.content = None
+        self.content_dirs, self.content_files = None,None
         self.ct_date = ttk.StringVar(value="None")
         self.subdirs_total = ttk.StringVar(value="None")
         self.files_total = ttk.StringVar(value="None")
@@ -189,23 +204,23 @@ class DirInfo():
         self.name.set(os.path.basename(pth))
         self.path.set(f"Path: {pth}")
         #----- Folder Content --------------------
-        self.content = self.get_dir_content(pth)
+        self.content_dirs, self.content_files = self.get_dir_content(pth)
         #----- Date Creation ---------------------
         self.ct_date.set(f"Creation date: {date.fromtimestamp(os.path.getctime(pth))}")
         #----- Number of direct subdirectory -----
-        self.subdirs_total.set(f"Subfolders: {len(self.content["dir"][0])}")
+        self.subdirs_total.set(f"Subfolders total: {len(self.content_dirs)}")
         #----- Total of file ---------------------
-        self.files_total.set(f"Files: {self.get_files_total()}")
+        self.files_total.set(f"Files total: {self.get_files_total()}")
         #-----------------------------------------
 
     def get_files_total(self):
         ft = 0
-        for ext,filenames in self.content.items():
+        for ext,filenames in self.content_files.items():
             if ext != "dir":
-                ft += len(filenames)
+                ft += len(filenames[0])
         return ft
 
-    def get_dir_content(self, pth: str):
+    def get_dir_content(self, starting_pth: str):
         """Gets info about specified directory path. Return a dict where keys are file extensions & values are list of files with key's extension.
             Directories are also listed with 'dir' as key.
 
@@ -214,19 +229,28 @@ class DirInfo():
             Return     : {extension:[[DirEntry file1, DirEntry file2], total_size_of_extension]}
             Return type: dict(str:list[list[DirEntry],int])
         """
-        ext_dict = {"dir":[[],0]}
-        for file in os.scandir(pth):
-            if file.is_dir():
-                ext_dict["dir"][0].append(file.name)
+        dirs = []
+        ext_dict = {}
+        
+        def rec_gdc(pth: str, dirs: list, ext_dict: dict):
+            """recursive get_dir_content"""
+            for file in os.scandir(pth):
+                if file.is_dir() and file.name[0] != '.':
+                    dirs.append(file.name)
+                    rec_gdc(path.join(pth,file.name), dirs, ext_dict)
 
-            elif file.is_file():
-                _, ext = path.splitext(file.name)
-                if ext in ext_dict:
-                    ext_dict[ext][0].append(file)
-                    ext_dict[ext][1] += file.stat().st_size
-                else:
-                    ext_dict[ext] = [[file],file.stat().st_size]
-        return ext_dict
+                elif file.is_file():
+                    _, ext = path.splitext(file.name)
+                    if ext == "":
+                        ext = file.name
+                    if ext in ext_dict:
+                        ext_dict[ext][0].append(file)
+                        ext_dict[ext][1] += file.stat().st_size
+                    else:
+                        ext_dict[ext] = [[file],file.stat().st_size]
+        
+        rec_gdc(starting_pth, dirs, ext_dict)
+        return dirs,ext_dict
 
 
 if __name__ == "__main__":
