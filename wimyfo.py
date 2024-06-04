@@ -132,16 +132,34 @@ class StatsTab(tk.Frame):
 
         # -- mainright
         self.totalsize_label = ttk.Label(self.mainright_frame, width=20, text="Total Size: None")
-        self.subfolders_label = ttk.Label(
+        self.direct_subfolders_label = ttk.Label(
             self.mainright_frame,
-            textvariable=self.dirinfo.subdirs_total,
+            textvariable=self.dirinfo.direct_subdirs_total,
             width=20,
             anchor=W
         )
-        self.files_label = ttk.Label(
+        self.direct_files_label = ttk.Label(
             self.mainright_frame,
+            textvariable=self.dirinfo.direct_files_total,
+            width=20,
+            anchor=W
+        )
+
+        # -- files
+        self.files_label = ttk.Label(
+            self.files_frame,
             textvariable=self.dirinfo.files_total,
             width=20,
+            justify=LEFT,
+            anchor=W
+        )
+
+        # -- folders
+        self.subfolders_label = ttk.Label(
+            self.folders_frame,
+            textvariable=self.dirinfo.subdirs_total,
+            width=20,
+            justify=LEFT,
             anchor=W
         )
 
@@ -179,6 +197,8 @@ class StatsTab(tk.Frame):
             self.path_label.pack()
             self.cat_label.pack(side=LEFT)
             self.totalsize_label.pack()
+            self.direct_files_label.pack()
+            self.direct_subfolders_label.pack()
             self.files_label.pack()
             self.subfolders_label.pack()
 
@@ -196,6 +216,8 @@ class DirInfo():
         self.path = ttk.StringVar(value="None")
         self.content_dirs, self.content_files = None,None
         self.ct_date = ttk.StringVar(value="None")
+        self.direct_subdirs_total = ttk.StringVar(value="None")
+        self.direct_files_total = ttk.StringVar(value="None")
         self.subdirs_total = ttk.StringVar(value="None")
         self.files_total = ttk.StringVar(value="None")
 
@@ -208,10 +230,21 @@ class DirInfo():
         #----- Date Creation ---------------------
         self.ct_date.set(f"Creation date: {date.fromtimestamp(os.path.getctime(pth))}")
         #----- Number of direct subdirectory -----
+        self.direct_subdirs_total.set(f"Subfolders: {self.get_direct_subdirs_total(pth)}")
+        #----- Number of direct file -------------
+        self.direct_files_total.set(f"Files: {self.get_direct_files_total(pth)}")
+        #----- Total of all subdirectory ---------
         self.subdirs_total.set(f"Subfolders total: {len(self.content_dirs)}")
-        #----- Total of file ---------------------
+        #----- Total of all files ----------------
         self.files_total.set(f"Files total: {self.get_files_total()}")
         #-----------------------------------------
+        
+
+    def get_direct_files_total(self, pth: str):
+        return len(list(filter(lambda file: file.is_file(), os.scandir(pth))))
+    
+    def get_direct_subdirs_total(self, pth: str):
+        return len(list(filter(lambda file: file.is_dir(), os.scandir(pth))))
 
     def get_files_total(self):
         ft = 0
