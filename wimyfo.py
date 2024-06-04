@@ -3,6 +3,7 @@ import os.path as path
 import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter import filedialog, font
+from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.constants import *
 from datetime import date
 
@@ -105,44 +106,43 @@ class StatsTab(tk.Frame):
         self.dirinfo = DirInfo()
         self.ext_progbars_list = []
         self.ext_labels_list = []
+        self.subdir_labels_list = []
 
         # No Folder text
         self.placeholder_label = ttk.Label(self,text="Select a folder first",bootstyle=DANGER, font=APP_FONT(12))
         
         # Folder widgets
-        self.maininfo_frame = ttk.LabelFrame(self, text=self.dirinfo.name.get(), bootstyle=WARNING)
+        self.maininfo_frame = ttk.LabelFrame(self, text="Main infos", bootstyle=WARNING)
         self.details_frame = ttk.Frame(self)
-
-        self.files_frame = ttk.LabelFrame(self.details_frame, text="FILES", bootstyle=INFO)
-        self.folders_frame = ttk.LabelFrame(self.details_frame, text="FOLDERS", bootstyle=INFO)
 
         self.mainleft_frame = ttk.Frame(self.maininfo_frame)
         self.mainright_frame = ttk.Frame(self.maininfo_frame, bootstyle=DANGER)
 
+        self.files_frame = ttk.LabelFrame(self.details_frame, text="FILES", bootstyle=INFO)
+        self.folders_frame = ttk.LabelFrame(self.details_frame, text="FOLDERS", bootstyle=INFO)
+
+        self.scrollfiles_frame = ScrolledFrame(self.files_frame)
 
         # -- mainleft
-        self.path_label = ttk.Label(
-            self.mainleft_frame,
-            textvariable=self.dirinfo.path
-        )
-        self.cat_label = ttk.Label(
-            self.mainleft_frame,
-            textvariable=self.dirinfo.ct_date,
-        )
+        self.name_label = ttk.Label(self.mainleft_frame, textvariable=self.dirinfo.name, font=APP_FONT(9))
+        self.path_label = ttk.Label(self.mainleft_frame, textvariable=self.dirinfo.path, font=APP_FONT(9))
+        self.cat_label = ttk.Label(self.mainleft_frame, textvariable=self.dirinfo.ct_date, font=APP_FONT(9))
 
         # -- mainright
-        self.totalsize_label = ttk.Label(self.mainright_frame, width=20, text="Total Size: None")
+        self.totalsize_label = ttk.Label(self.mainright_frame, width=20, text="Total Size: None", font=APP_FONT(9))
         self.direct_subfolders_label = ttk.Label(
             self.mainright_frame,
             textvariable=self.dirinfo.direct_subdirs_total,
             width=20,
-            anchor=W
+            anchor=W,
+            font=APP_FONT(9)
         )
         self.direct_files_label = ttk.Label(
             self.mainright_frame,
             textvariable=self.dirinfo.direct_files_total,
             width=20,
-            anchor=W
+            anchor=W,
+            font=APP_FONT(9)
         )
 
         # -- files
@@ -151,7 +151,8 @@ class StatsTab(tk.Frame):
             textvariable=self.dirinfo.files_total,
             width=20,
             justify=LEFT,
-            anchor=W
+            anchor=W,
+            font=APP_FONT(12)
         )
 
         # -- folders
@@ -160,20 +161,31 @@ class StatsTab(tk.Frame):
             textvariable=self.dirinfo.subdirs_total,
             width=20,
             justify=LEFT,
-            anchor=W
+            anchor=W,
+            font=APP_FONT(12)
         )
 
     
     def add_details(self):
         for ext,files in self.dirinfo.content_files.items():
-            label = ttk.Label(self.files_frame, text=ext)
-            progbar = ttk.Progressbar(self.files_frame, bootstyle="warning-striped", mode=DETERMINATE, value=50)
-            self.ext_progbars_list.append(progbar)
+            label = ttk.Label(self.scrollfiles_frame, text=ext, anchor=W, justify=LEFT)
             self.ext_labels_list.append(label)
-            print(f"Stat for {ext}:", end="\n\t")
-            for file in files[0]:
-                print(file, end=", ")
-            print()
+            progbar = ttk.Progressbar(self.scrollfiles_frame, bootstyle="warning-striped", mode=DETERMINATE, value=50)
+            self.ext_progbars_list.append(progbar)
+        # for ext,files in self.dirinfo.content_files.items():
+        #     label = ttk.Label(self.scrollfiles_frame, text=ext, anchor=W, justify=LEFT)
+        #     self.ext_labels_list.append(label)
+        #     progbar = ttk.Progressbar(self.scrollfiles_frame, bootstyle="warning-striped", mode=DETERMINATE, value=50)
+        #     self.ext_progbars_list.append(progbar)
+            # DEBUG
+            # print(f"Stat for {ext}:", end="\n\t")
+            # for file in files[0]:
+            #     print(file, end=", ")
+            # print()
+        
+        for directory in self.dirinfo.content_dirs:
+            label = ttk.Button(self.folders_frame,text=f"{directory}: size", bootstyle="link") #font=("Sergoe UI", 12), anchor=W, justify=LEFT)
+            self.subdir_labels_list.append(label)
 
 
     def display(self, folder_selected):
@@ -183,28 +195,37 @@ class StatsTab(tk.Frame):
         """
         if not folder_selected:
             self.pack()
-            self.placeholder_label.pack()
+            self.placeholder_label.pack(pady=15)
         else:
             self.placeholder_label.pack_forget()
 
             self.maininfo_frame.pack(padx=10, pady=10, fill=X)
             self.details_frame.pack(expand=True, fill=BOTH)
-            self.files_frame.pack(expand=True, fill=BOTH, side=LEFT, padx=10, pady=10)
-            self.folders_frame.pack(expand=True, fill=BOTH, side=RIGHT, padx=10, pady=10)
             self.mainleft_frame.pack(fill=Y, side=LEFT, padx=5, pady=5)
             self.mainright_frame.pack(fill=Y, side=RIGHT, padx=5, pady=(0,5))
 
-            self.path_label.pack()
-            self.cat_label.pack(side=LEFT)
-            self.totalsize_label.pack()
-            self.direct_files_label.pack()
-            self.direct_subfolders_label.pack()
-            self.files_label.pack()
-            self.subfolders_label.pack()
+            # self.files_frame.pack(expand=False, fill=BOTH, side=LEFT, padx=10, pady=10) old pack
+            # self.folders_frame.pack(fill=BOTH, side=RIGHT, padx=10, pady=10)
+            self.files_frame.place(x=10,y=5,relheight=0.95,relwidth=0.63)
+            self.folders_frame.place(relx=0.65,y=5,relheight=0.95,relwidth=0.34)
+            self.scrollfiles_frame.pack(expand=True,fill=BOTH, padx=5)
+
+            self.name_label.pack(fill=X)
+            self.path_label.pack(fill=X)
+            self.cat_label.pack(fill=X)
+            self.totalsize_label.pack(fill=X)
+            self.direct_files_label.pack(fill=X)
+            self.direct_subfolders_label.pack(fill=X)
 
             for label,progbar in list(zip(self.ext_labels_list,self.ext_progbars_list)):
-                label.pack(pady=(5,0))
-                progbar.pack(pady=(0,5), padx=20 ,fill=X)
+                label.pack(pady=(7,0), padx=25, fill=X)
+                progbar.pack(pady=(0,5), padx=(20,40) ,fill=X)
+
+            for label in self.subdir_labels_list:
+                label.pack(pady=(10,8), fill=X)
+            
+            self.files_label.pack(side=BOTTOM, pady=10)
+            self.subfolders_label.pack(side=BOTTOM, pady=10, padx=15)
 
 
 # SCRIPT CLASSES
@@ -223,16 +244,16 @@ class DirInfo():
 
     def update(self, pth: str):
         #----- Folder Name -----------------------
-        self.name.set(os.path.basename(pth))
+        self.name.set(f"Name: {os.path.basename(pth)}")
         self.path.set(f"Path: {pth}")
         #----- Folder Content --------------------
         self.content_dirs, self.content_files = self.get_dir_content(pth)
         #----- Date Creation ---------------------
         self.ct_date.set(f"Creation date: {date.fromtimestamp(os.path.getctime(pth))}")
         #----- Number of direct subdirectory -----
-        self.direct_subdirs_total.set(f"Subfolders: {self.get_direct_subdirs_total(pth)}")
+        self.direct_subdirs_total.set(f"Direct subfolders: {self.get_direct_subdirs_total(pth)}")
         #----- Number of direct file -------------
-        self.direct_files_total.set(f"Files: {self.get_direct_files_total(pth)}")
+        self.direct_files_total.set(f"Direct files: {self.get_direct_files_total(pth)}")
         #----- Total of all subdirectory ---------
         self.subdirs_total.set(f"Subfolders total: {len(self.content_dirs)}")
         #----- Total of all files ----------------
