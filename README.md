@@ -46,7 +46,7 @@ Modules : Tkinter + [ttkbootstrap](https://ttkbootstrap.readthedocs.io) (The the
 - [X] 🗝️give total number of files and subfolders
 - [X] 🗝️give occupied space by each type of file
 - [ ] 🗝️give occupied space for each direct subfolder
-- [ ] 🗝️give total occupied space by the folder
+- [X] 🗝️give total occupied space by the folder
 - [ ] 🗝️show everything in a graphical interface
 - [ ] 🔥navigation system amongst folders
 - [ ] ❓optimizing navigation <!-- (quand on remonte/descned un dossier, concerve les infos précédentes pour réutiliser celles nécessaires) -->

@@ -344,6 +344,8 @@ class DirInfo():
         def rec_gdc(pth: str, dirs: list, ext_dict: dict):
             """recursive get_dir_content"""
             for file in os.scandir(pth):
+                if file.is_junction():
+                    continue
                 if file.is_dir() and file.name[0] != '.':
                     dirs.append(file.name)
                     rec_gdc(path.join(pth,file.name), dirs, ext_dict)
