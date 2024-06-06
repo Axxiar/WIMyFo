@@ -206,9 +206,23 @@ class StatsTab(tk.Frame):
             # print()
         
         for directory in self.dirinfo.content_dirs:
-            label = ttk.Button(self.scrollfolders_frame, text=f"{directory}: size", bootstyle="link", cursor="hand2") #font=("Sergoe UI", 12), anchor=W, justify=LEFT)
+            temp_DI = DirInfo()
+            temp_DI.update(directory.path)
+            print(directory.path)
+            label = ttk.Button(
+                self.scrollfolders_frame,
+                text=f"{directory.name}: {temp_DI.convert_bytes(temp_DI.get_total_size())}",
+                bootstyle="link",
+                cursor="hand2",
+                command=lambda: self.change_directory(directory.path)
+            ) #font=("Sergoe UI", 12), anchor=W, justify=LEFT)
             self.subdir_labels_list.append(label)
     
+    def change_directory(self, new_path):
+        print(new_path)
+        self.main_window.dirpath.set(new_path)
+        self.main_window.analyse_dir()
+
     def get_ext_percentage(self, file_ext):
         return round(self.dirinfo.content_files[file_ext][1] / self.dirinfo.get_total_size() * 100, 2)
 
@@ -347,7 +361,7 @@ class DirInfo():
                 if file.is_junction():
                     continue
                 if file.is_dir() and file.name[0] != '.':
-                    dirs.append(file.name)
+                    dirs.append(file)
                     rec_gdc(path.join(pth,file.name), dirs, ext_dict)
 
                 elif file.is_file():
