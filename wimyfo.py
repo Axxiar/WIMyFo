@@ -178,6 +178,8 @@ class StatsTab(tk.Frame):
 
     
     def add_details(self):
+        pb_themes = [DANGER,WARNING,PRIMARY,INFO,SUCCESS,LIGHT]
+        i = 0
         for ext,files in self.dirinfo.content_files.items():
             label = ttk.Label(
                 self.scrollfiles_frame,
@@ -189,11 +191,12 @@ class StatsTab(tk.Frame):
             self.get_ext_percentage(ext)
             progbar = ttk.Progressbar(
                 self.scrollfiles_frame,
-                bootstyle="success-striped",
+                bootstyle=f"{pb_themes[i]}-striped",
                 mode=DETERMINATE,
                 value=self.get_ext_percentage(ext)
             )
             self.ext_progbars_list.append(progbar)
+            i = (i+1) % 6
         # for ext,files in self.dirinfo.content_files.items():
         #     label = ttk.Label(self.scrollfiles_frame, text=ext, anchor=W, justify=LEFT)
         #     self.ext_labels_list.append(label)
@@ -385,8 +388,10 @@ class DirInfo():
                         ext_dict[ext] = [[file],file.stat().st_size]
         
         rec_gdc(starting_pth, dirs, ext_dict)
-        print(sorted(ext_dict.values(), key=lambda l: l[1], reverse=True))
-        return dirs,ext_dict
+        # print(dict(zip(ext_dict.keys(), ext_dict.values())))
+        # print()
+        # print(list(zip( sorted(ext_dict.values(), key=lambda l: l[1], reverse=True) , ext_dict.keys())))
+        return dirs,dict(zip(ext_dict.keys(), sorted(ext_dict.values(), key=lambda l: l[1], reverse=True)))
 
 
 if __name__ == "__main__":
