@@ -189,7 +189,7 @@ class StatsTab(tk.Frame):
             self.get_ext_percentage(ext)
             progbar = ttk.Progressbar(
                 self.scrollfiles_frame,
-                bootstyle="warning-striped",
+                bootstyle="success-striped",
                 mode=DETERMINATE,
                 value=self.get_ext_percentage(ext)
             )
@@ -204,22 +204,31 @@ class StatsTab(tk.Frame):
             # for file in files[0]:
             #     print(file, end=", ")
             # print()
-        
+        previous_path = path.realpath(path.join(self.main_window.dirpath.get(), ".."))
+        pp_label = tk.Button (
+            self.scrollfolders_frame,
+            text=f"..",
+            cursor="hand2",
+            command=lambda: self.change_directory(previous_path),
+            width=5,
+            font=APP_FONT(10)        
+        )
+        self.subdir_labels_list.append(pp_label)
+ 
         for directory in self.dirinfo.content_dirs:
+            dirpath = directory.path
             temp_DI = DirInfo()
-            temp_DI.update(directory.path)
-            print(directory.path)
+            temp_DI.update(dirpath)
             label = ttk.Button(
                 self.scrollfolders_frame,
                 text=f"{directory.name}: {temp_DI.convert_bytes(temp_DI.get_total_size())}",
-                bootstyle="link",
+                bootstyle="outline",
                 cursor="hand2",
-                command=lambda: self.change_directory(directory.path)
-            ) #font=("Sergoe UI", 12), anchor=W, justify=LEFT)
+                command=lambda dirpath = dirpath: self.change_directory(dirpath) # wow what a trick
+            )
             self.subdir_labels_list.append(label)
     
     def change_directory(self, new_path):
-        print(new_path)
         self.main_window.dirpath.set(new_path)
         self.main_window.analyse_dir()
 
@@ -269,8 +278,9 @@ class StatsTab(tk.Frame):
                 label.pack(pady=(7,0), padx=25, fill=X)
                 progbar.pack(pady=(0,5), padx=(20,40) ,fill=X)
 
-            for label in self.subdir_labels_list:
-                label.pack(pady=(10,8), fill=X)
+            self.subdir_labels_list[0].pack(pady=(10,8), padx=(20,40))
+            for i in range(1, len(self.subdir_labels_list)):
+                self.subdir_labels_list[i].pack(pady=(10,8), padx=(20,40), fill=X)
             
             self.files_label.pack(side=BOTTOM, pady=10)
             self.subfolders_label.pack(side=BOTTOM, pady=10, padx=15)
@@ -375,6 +385,7 @@ class DirInfo():
                         ext_dict[ext] = [[file],file.stat().st_size]
         
         rec_gdc(starting_pth, dirs, ext_dict)
+        print(sorted(ext_dict.values(), key=lambda l: l[1], reverse=True))
         return dirs,ext_dict
 
 

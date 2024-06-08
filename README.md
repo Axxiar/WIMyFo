@@ -39,17 +39,20 @@ Modules : Tkinter + [ttkbootstrap](https://ttkbootstrap.readthedocs.io) (The the
 ###
 
 ## Roadmap
-- [X] 🗝️allow user to select the folder to analyse
+- [X] 🗝️ allow user to select the folder to analyse
     - [X] via command line
     - [X] via interface
-- [X] 🗝️give number of files of each type
-- [X] 🗝️give total number of files and subfolders
-- [X] 🗝️give occupied space by each type of file
-- [X] 🗝️give occupied space for each direct subfolder
-- [X] 🗝️give total occupied space by the folder
-- [X] 🗝️show everything in a graphical interface
-- [ ] 🔥navigation system amongst folders
-- [ ] ❓optimizing navigation <!-- (quand on remonte/descned un dossier, concerve les infos précédentes pour réutiliser celles nécessaires) -->
+- [X] 🗝️ give number of files of each type
+- [X] 🗝️ give total number of files and subfolders
+- [X] 🗝️ give occupied space by each type of file
+- [X] 🗝️ give occupied space for each direct subfolder
+- [X] 🗝️ give total occupied space by the folder
+- [X] 🗝️ show everything in a graphical interface
+- [X] 🔥 navigation system amongst folders
+- [ ] 🔥 random colors for progressbars
+- [ ] 🔥 posibility to change the theme
+- [ ] 🔥 option for hidden folders too
+- [ ] ❓ optimizing navigation <!-- (quand on remonte/descned un dossier, concerve les infos précédentes pour réutiliser celles nécessaires) -->
 
 🗝️: key feature<br>
 🔥: cool extra feature idea<br>
