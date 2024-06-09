@@ -15,9 +15,9 @@ WIMyFo = What In My Folder
 
 It is a project I've had in mind for a long time, but also challenge from "le P." ([@PierreHvrd](https://github.com/PierreHvrd)). 
 
-**Check out his version [here](https://github.com/PierreHvrd/StatFiles)**
-
 Each of us had to create it on our own under 9 days.
+
+**Check out his version [here](https://github.com/PierreHvrd/StatFiles)**
 
 ### Specifications
 > - allow user to select the folder he want to analyse
