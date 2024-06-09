@@ -14,7 +14,7 @@ APP_FONT = lambda size: ("JetBrainsMono NF",size)
 class WimyfoApp(ttk.Window):
     def __init__(self, dirpath=os.getcwd()):
         #==SETUP==
-        super().__init__(themename="superhero")
+        super().__init__(themename="cyborg")
         self.dirpath = ttk.StringVar(value=dirpath)
         self.title("WIMyFo")
         self.window_sizes = [["900x290", (700,200)],["1170x660",(1000,500)]]
@@ -25,6 +25,7 @@ class WimyfoApp(ttk.Window):
         self.notebook = ttk.Notebook(self)
         self.menu_tab = MenuTab(self, self.notebook)
         self.stats_tab = StatsTab(self, self.notebook)
+        self.settings_tab = SettingsTab(self, self.notebook)
 
         self.display()
         
@@ -53,6 +54,7 @@ class WimyfoApp(ttk.Window):
         self.stats_tab.display(False)
         self.notebook.add(self.menu_tab, text = "Menu")
         self.notebook.add(self.stats_tab, text = "Directory stats")
+        self.notebook.add(self.settings_tab, text = "Settings")
         self.notebook.pack(expand=True,fill=BOTH)
 
 
@@ -73,7 +75,7 @@ class MenuTab(ttk.Frame):
         self.browse_btn = ttk.Button(
             self.interactive_frame, 
             text="Browse",
-            bootstyle="outline-primary",
+            bootstyle=OUTLINE,
             cursor="hand2",
             command=self.askdir
         )
@@ -178,8 +180,10 @@ class StatsTab(tk.Frame):
 
     
     def add_details(self):
-        pb_themes = [DANGER,WARNING,PRIMARY,INFO,SUCCESS,LIGHT]
-        i = 0
+        # pb_themes = [DANGER,WARNING,PRIMARY,INFO,SUCCESS,LIGHT]
+        # i = 0
+
+        # files progressbars
         for ext,files in self.dirinfo.content_files.items():
             label = ttk.Label(
                 self.scrollfiles_frame,
@@ -191,22 +195,14 @@ class StatsTab(tk.Frame):
             self.get_ext_percentage(ext)
             progbar = ttk.Progressbar(
                 self.scrollfiles_frame,
-                bootstyle=f"{pb_themes[i]}-striped",
+                bootstyle="striped-warning",
                 mode=DETERMINATE,
                 value=self.get_ext_percentage(ext)
             )
             self.ext_progbars_list.append(progbar)
-            i = (i+1) % 6
-        # for ext,files in self.dirinfo.content_files.items():
-        #     label = ttk.Label(self.scrollfiles_frame, text=ext, anchor=W, justify=LEFT)
-        #     self.ext_labels_list.append(label)
-        #     progbar = ttk.Progressbar(self.scrollfiles_frame, bootstyle="warning-striped", mode=DETERMINATE, value=50)
-        #     self.ext_progbars_list.append(progbar)
-            # DEBUG
-            # print(f"Stat for {ext}:", end="\n\t")
-            # for file in files[0]:
-            #     print(file, end=", ")
-            # print()
+            # i = (i+1) % 6
+        
+        # subfolders
         previous_path = path.realpath(path.join(self.main_window.dirpath.get(), ".."))
         pp_label = tk.Button (
             self.scrollfolders_frame,
@@ -224,8 +220,8 @@ class StatsTab(tk.Frame):
             temp_DI.update(dirpath)
             label = ttk.Button(
                 self.scrollfolders_frame,
-                text=f"{directory.name}: {temp_DI.convert_bytes(temp_DI.get_total_size())}",
-                bootstyle="outline",
+                text=f"{self.get_subdir_relpath(directory)} : {temp_DI.convert_bytes(temp_DI.get_total_size())}",
+                bootstyle="outline-light",
                 cursor="hand2",
                 command=lambda dirpath = dirpath: self.change_directory(dirpath) # wow what a trick
             )
@@ -234,6 +230,9 @@ class StatsTab(tk.Frame):
     def change_directory(self, new_path):
         self.main_window.dirpath.set(new_path)
         self.main_window.analyse_dir()
+
+    def get_subdir_relpath(self, subdir):
+        return subdir.path.replace(self.main_window.dirpath.get(),"")
 
     def get_ext_percentage(self, file_ext):
         return round(self.dirinfo.content_files[file_ext][1] / self.dirinfo.get_total_size() * 100, 2)
@@ -288,6 +287,39 @@ class StatsTab(tk.Frame):
             self.files_label.pack(side=BOTTOM, pady=10)
             self.subfolders_label.pack(side=BOTTOM, pady=10, padx=15)
 
+
+class SettingsTab(tk.Frame):
+    def __init__(self, main_window, parent):
+        super().__init__(parent)
+        self.main_window = main_window
+        self.light_themes = ["cosmo","flatly","journal","litera","lumen","minty","pulse","sandstone","united",
+                             "yeti","morph","simplex","cerculean"]
+        self.dark_themes = ["solar","superhero","darkly","cyborg","vapor"]
+
+        self.main_frame = ttk.Labelframe(self, text="SELECT THEMES")
+        self.themes_frame = ScrolledFrame(self.main_frame)
+
+        self.light_label = ttk.Label(self.themes_frame, text="Light themes", font=APP_FONT(9))
+        self.sep = ttk.Separator(self.themes_frame)
+        self.dark_label = ttk.Label(self.themes_frame, text="Dark themes", font=APP_FONT(9))
+
+
+        self.display()
+
+    def display(self):
+        self.main_frame.place(relx=0.5, rely=0.5, anchor=CENTER,relheight=0.5,relwidth=0.5)
+        self.themes_frame.pack(fill=BOTH, expand=True)
+
+        
+
+        self.light_label.pack()
+        for theme in self.light_themes:
+            theme_label = ttk.Button(self.themes_frame, text=theme, width=10).pack()
+        self.sep.pack()
+        self.dark_label.pack()
+        for theme in self.dark_themes:
+            theme_label = ttk.Button(self.themes_frame, text=theme, width=10).pack()
+        # self.tree_view.pack()
 
 # SCRIPT CLASSES
 class DirInfo():
@@ -388,22 +420,10 @@ class DirInfo():
                         ext_dict[ext] = [[file],file.stat().st_size]
         
         rec_gdc(starting_pth, dirs, ext_dict)
-        # print(dict(zip(ext_dict.keys(), ext_dict.values())))
-        # print()
-        # print(list(zip( sorted(ext_dict.values(), key=lambda l: l[1], reverse=True) , ext_dict.keys())))
-        return dirs,dict(zip(ext_dict.keys(), sorted(ext_dict.values(), key=lambda l: l[1], reverse=True)))
+        ordered_ext_dict = dict(zip(ext_dict.keys(), sorted(ext_dict.values(), key=lambda l: l[1], reverse=True)))
+        return dirs, ordered_ext_dict
 
 
 if __name__ == "__main__":
     wimyfo = WimyfoApp()
     wimyfo.mainloop()
-
-#     # Content retrieving
-#     dir_content = get_dir_content(userpath)
-    
-#     # Stats extraction
-#     total_dir_number = len(dir_content["dir"])
-#     total_file_number = 0
-#     for ext,filenames in dir_content.items():
-#         if ext != "dir":
-#             total_file_number += len(filenames)
