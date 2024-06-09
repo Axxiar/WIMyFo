@@ -14,12 +14,13 @@ APP_FONT = lambda size: ("JetBrainsMono NF",size)
 class WimyfoApp(ttk.Window):
     def __init__(self, dirpath=os.getcwd()):
         #==SETUP==
-        super().__init__(themename="cyborg")
+        super().__init__(themename="superhero")
         self.dirpath = ttk.StringVar(value=dirpath)
         self.title("WIMyFo")
         self.window_sizes = [["900x290", (700,200)],["1170x660",(1000,500)]]
         self.geometry(self.window_sizes[0][0])
         self.minsize(*self.window_sizes[0][1])
+        
 
         #==WIDGETS==
         self.notebook = ttk.Notebook(self)
