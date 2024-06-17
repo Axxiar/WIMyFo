@@ -7,9 +7,8 @@ A desktop app that gives you stats about a specific folder and its files/subfold
 
 WIMyFo = What In My Folder
 
-🚧 *This project is under construction* 🚧
 
-
+<img src=img/menu.png width=40% align="top"> <img src=img/stats.png width=50%>
 
 ## About The Project
 
@@ -30,7 +29,6 @@ Each of us had to create it on our own under 9 days.
 
 
 ### Built With 
-
 
 ![](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=FFFFFF&style=for-the-badge)
  
