@@ -8,19 +8,18 @@ from ttkbootstrap.constants import *
 from datetime import date
 
 APP_FONT = lambda size: ("JetBrainsMono NF",size)
-#     print(dir_content,"\n\n",f"dirs: {total_dir_number}\n", f"files: {total_file_number}")
 
 # TKINTER CLASSES
 class WimyfoApp(ttk.Window):
     def __init__(self, dirpath=os.getcwd()):
         #==SETUP==
-        super().__init__(themename="superhero")
+        super().__init__()
         self.dirpath = ttk.StringVar(value=dirpath)
         self.title("WIMyFo")
         self.window_sizes = [["900x290", (700,200)],["1170x660",(1000,500)]]
         self.geometry(self.window_sizes[0][0])
         self.minsize(*self.window_sizes[0][1])
-        
+        self.style.theme_use("superhero")   
 
         #==WIDGETS==
         self.notebook = ttk.Notebook(self)
@@ -300,26 +299,34 @@ class SettingsTab(tk.Frame):
         self.main_frame = ttk.Labelframe(self, text="SELECT THEMES")
         self.themes_frame = ScrolledFrame(self.main_frame)
 
-        self.light_label = ttk.Label(self.themes_frame, text="Light themes", font=APP_FONT(9))
-        self.sep = ttk.Separator(self.themes_frame)
-        self.dark_label = ttk.Label(self.themes_frame, text="Dark themes", font=APP_FONT(9))
+        self.light_frame = ttk.Frame(self.themes_frame)
+        self.dark_frame = ttk.Frame(self.themes_frame)
+
+        self.light_label = ttk.Label(self.light_frame, text="Light themes", font=APP_FONT(9))
+        # self.sep = ttk.Separator(self.themes_frame)
+        self.dark_label = ttk.Label(self.dark_frame, text="Dark themes", font=APP_FONT(9))
 
 
         self.display()
 
+
+    def change_theme(self, new_theme):
+        return lambda: self.main_window.style.theme_use(new_theme)
+
+
     def display(self):
-        self.main_frame.place(relx=0.5, rely=0.5, anchor=CENTER,relheight=0.5,relwidth=0.5)
+        self.main_frame.place(relx=0.5, rely=0.5, anchor=CENTER, relheight=0.8, relwidth=0.7 )
         self.themes_frame.pack(fill=BOTH, expand=True)
+        self.light_frame.pack(side=LEFT,fill=BOTH,expand=True)
+        self.dark_frame.pack(side=LEFT,fill=BOTH,expand=True)
 
-        
-
-        self.light_label.pack()
+        self.light_label.pack(anchor=CENTER, pady=(20,25))
         for theme in self.light_themes:
-            theme_label = ttk.Button(self.themes_frame, text=theme, width=10).pack()
-        self.sep.pack()
-        self.dark_label.pack()
+            theme_label = ttk.Button(self.light_frame, text=theme, width=10, cursor="hand2", command=self.change_theme(theme)).pack(anchor=CENTER,pady=7)
+        # self.sep.pack()
+        self.dark_label.pack(anchor=CENTER, pady=(20,25))
         for theme in self.dark_themes:
-            theme_label = ttk.Button(self.themes_frame, text=theme, width=10).pack()
+            theme_label = ttk.Button(self.dark_frame, text=theme, width=10, cursor="hand2", command=self.change_theme(theme)).pack(anchor=CENTER,pady=7)
         # self.tree_view.pack()
 
 # SCRIPT CLASSES
