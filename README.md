@@ -32,7 +32,7 @@ Each of us had to create it on our own under 9 days.
 
 ![](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=FFFFFF&style=for-the-badge)
  
-Modules : Tkinter + [ttkbootstrap](https://ttkbootstrap.readthedocs.io) (The theme used is ["Superhero"](https://ttkbootstrap.readthedocs.io/en/latest/themes/dark/)), os, datetime
+Modules : Tkinter + [ttkbootstrap](https://ttkbootstrap.readthedocs.io) (The theme by default is ["Superhero"](https://ttkbootstrap.readthedocs.io/en/latest/themes/dark/)), os, datetime
 
 ###
 
