@@ -7,9 +7,9 @@ A desktop app that gives you stats about a specific folder and its files/subfold
 
 WIMyFo = What In My Folder
 
-
-<img src=img/menu.png width=60%>
-<img src=img/stats.png width=80%>
+<p align="center">
+ <img src=img/stats.png width=80% >
+</p>
 
 ## About The Project
 
