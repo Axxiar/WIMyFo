@@ -5,11 +5,10 @@
 
 A desktop app that gives you stats about a specific folder and its files/subfolders
 
+<img src=img/stats.png width=80% >
+
 WIMyFo = What In My Folder
 
-<p align="center">
- <img src=img/stats.png width=80% >
-</p>
 
 ## About The Project
 
