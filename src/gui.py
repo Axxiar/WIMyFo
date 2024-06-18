@@ -19,7 +19,7 @@ class WimyfoApp(ttk.Window):
         self.window_sizes = [["900x290", (700,200)],["1170x660",(1000,500)]]
         self.geometry(self.window_sizes[0][0])
         self.minsize(*self.window_sizes[0][1])
-        self.style.theme_use("superhero")   
+        self.style.theme_use("superhero")
 
         #==WIDGETS==
         self.notebook = ttk.Notebook(self)

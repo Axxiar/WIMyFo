@@ -5,10 +5,11 @@
 
 A desktop app that gives you stats about a specific folder and its files/subfolders
 
-<img src=img/stats.png width=80% >
+<img src=res/stats.png width=80%>
 
 WIMyFo = What In My Folder
 
+<br>
 
 ## About The Project
 
@@ -36,6 +37,7 @@ Each of us had to create it on our own under 9 days.
 Modules : Tkinter + [ttkbootstrap](https://ttkbootstrap.readthedocs.io) (The theme by default is ["Superhero"](https://ttkbootstrap.readthedocs.io/en/latest/themes/dark/)), os, datetime
 
 
+<br>
 
 ## Getting Started
 
@@ -44,7 +46,14 @@ Modules : Tkinter + [ttkbootstrap](https://ttkbootstrap.readthedocs.io) (The the
 ``git clone`` the project
 
 To launch the Graphical App run the `src/gui.py` script <br>
-or run the `src/wimyfo.py` srcipt with option 
+or run the `src/wimyfo.py` srcipt with the option `--gui` or `-g`
+
+*example :*
+```
+> git clone https://github.com/Axxiar/WIMyFo.git
+> python ./src/wimyfo.py --gui
+```
+<br>
 
 ## Roadmap
 - [X] 🗝️ allow user to select the folder to analyse
