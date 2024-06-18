@@ -28,13 +28,23 @@ Each of us had to create it on our own under 9 days.
 > - show statistics in a user-friendly way
 
 
+
 ### Built With 
 
 ![](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=FFFFFF&style=for-the-badge)
  
 Modules : Tkinter + [ttkbootstrap](https://ttkbootstrap.readthedocs.io) (The theme used is ["Superhero"](https://ttkbootstrap.readthedocs.io/en/latest/themes/dark/)), os, datetime
 
-###
+
+
+## Getting Started
+
+### Installation
+
+``git clone`` the project
+
+To launch the Graphical App run the `src/gui.py` script <br>
+or run the `src/wimyfo.py` srcipt with option 
 
 ## Roadmap
 - [X] 🗝️ allow user to select the folder to analyse
