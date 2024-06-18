@@ -1,9 +1,9 @@
 <a name="readme-top"></a>
 
 <!-- INTRO -->
-# wimyfo.py - Folder statistics
-
+# <img src=res/icon.ico align=center width=40> wimyfo.py - Folder statistics 
 A desktop app that gives you stats about a specific folder and its files/subfolders
+
 
 <img src=res/stats.png width=80%>
 
