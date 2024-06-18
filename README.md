@@ -67,7 +67,7 @@ $ python ./src/wimyfo.py --gui
 - [ ] ~~random colors for progressbars~~
 - [X] 🔥 posibility to change the theme
 - [ ] 🔥 option for hidden folders too
-- [ ] 🔥 add possibility to execute in command line without graphic interface
+- [ ] 🔥 add possibility to execute in command line without graphical interface
 - [ ] ❓ make the program an importable module
 - [ ] ❓ optimizing navigation <!-- (quand on remonte/descned un dossier, concerve les infos précédentes pour réutiliser celles nécessaires) -->
 
