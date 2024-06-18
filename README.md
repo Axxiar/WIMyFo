@@ -49,9 +49,9 @@ To launch the Graphical App run the `src/gui.py` script <br>
 or run the `src/wimyfo.py` srcipt with the option `--gui` or `-g`
 
 *example :*
-```
-> git clone https://github.com/Axxiar/WIMyFo.git
-> python ./src/wimyfo.py --gui
+```console
+$ git clone https://github.com/Axxiar/WIMyFo.git
+$ python ./src/wimyfo.py --gui
 ```
 <br>
 
