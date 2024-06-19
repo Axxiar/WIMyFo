@@ -11,6 +11,7 @@ from analyser import DirInfo
 APP_FONT = lambda size: ("JetBrainsMono NF",size)
 
 class WimyfoApp(ttk.Window):
+    """Base class of the GUI app"""
     def __init__(self, dirpath=os.getcwd()):
         #==SETUP==
         super().__init__()
@@ -20,6 +21,7 @@ class WimyfoApp(ttk.Window):
         self.geometry(self.window_sizes[0][0])
         self.minsize(*self.window_sizes[0][1])
         self.style.theme_use("superhero")
+        self.iconbitmap(os.path.realpath(__file__ + "/../../res/icon.ico"))
 
         #==WIDGETS==
         self.notebook = ttk.Notebook(self)
