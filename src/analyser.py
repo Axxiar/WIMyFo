@@ -60,7 +60,7 @@ class DirInfo():
             ts += size
         return ts
 
-    def convert_bytes(self, size):
+    def convert_bytes(self, size: int) -> str:
         size_str = ""
         if size < 1024:
             size_str = f"{size}B"
@@ -85,7 +85,7 @@ class DirInfo():
         ext_dict = {}
         
         def rec_gdc(pth: str, dirs: list, ext_dict: dict):
-            """recursive get_dir_content"""
+            """Recursive get_dir_content"""
             for file in os.scandir(pth):
                 if file.is_junction():
                     continue

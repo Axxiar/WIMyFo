@@ -11,13 +11,25 @@ from analyser import DirInfo
 APP_FONT = lambda size: ("JetBrainsMono NF",size)
 
 class WimyfoApp(ttk.Window):
-    """Base class of the GUI app"""
+    """
+    Root class of the GUI app
+        
+    Attributes:
+        dirpath: (str)
+            the path from where the script was executed
+        
+        window_sizes: (list of lists)
+            list of different tabs' window size and window max/min-size
+    """
     def __init__(self, dirpath=os.getcwd()):
-        #==SETUP==
         super().__init__()
+        
+        #==ATTRIBUTES==
         self.dirpath = ttk.StringVar(value=dirpath)
-        self.title("WIMyFo")
         self.window_sizes = [["900x290", (700,200)],["1170x660",(1000,500)]]
+        
+        #==SETUP==
+        self.title("WIMyFo")
         self.geometry(self.window_sizes[0][0])
         self.minsize(*self.window_sizes[0][1])
         self.style.theme_use("superhero")
@@ -29,21 +41,30 @@ class WimyfoApp(ttk.Window):
         self.stats_tab = StatsTab(self, self.notebook)
         self.settings_tab = SettingsTab(self, self.notebook)
 
+        #==DISPLAY==
         self.display()
         
 
-    def analyse_dir(self):
+    def analyse_dir(self) -> None:
+        """Switches to stats_tab and launch an analyse on last selected folder
+        """
+        # switch tab and resize the window
         self.notebook.select(1)
         self.geometry(self.window_sizes[1][0])
         self.minsize(*self.window_sizes[1][1])
 
+        # reset previous stats
         self.reset_statstab()
 
+        # analyse last selected folder and display results in stats_tab
         self.stats_tab.dirinfo.update(self.dirpath.get())
         self.stats_tab.add_details()
         self.stats_tab.display(True)
 
-    def reset_statstab(self):
+
+    def reset_statstab(self) -> None:
+        """Empties the stats_tab
+        """
         for label,progbar in list(zip(self.stats_tab.ext_labels_list, self.stats_tab.ext_progbars_list)):
                 label.pack_forget()
                 progbar.pack_forget()
@@ -51,7 +72,10 @@ class WimyfoApp(ttk.Window):
             label.pack_forget()
         self.stats_tab.ext_labels_list, self.stats_tab.ext_progbars_list, self.stats_tab.subdir_labels_list = [], [], []
 
-    def display(self):
+
+    def display(self) -> None:
+        f"""Displays the widgets of {self.__class__}
+        """
         self.menu_tab.display()
         self.stats_tab.display(False)
         self.notebook.add(self.menu_tab, text = "Menu")
@@ -60,11 +84,22 @@ class WimyfoApp(ttk.Window):
         self.notebook.pack(expand=True,fill=BOTH)
 
 
-class MenuTab(ttk.Frame):
-    def __init__(self, main_window, parent):
-        super().__init__(parent)
-        self.main_window = main_window # to track main window
 
+class MenuTab(ttk.Frame):
+    """
+    Widget class for the menu tab
+    
+    Attributes:
+        main_window: (WimyfoApp)
+            reference to the root class of the app
+    """
+    def __init__(self, main_window, parent):
+        """baboi"""
+        super().__init__(parent)
+        #==ATTRIBUTES==
+        self.main_window = main_window
+
+        #==WIDGETS==
         self.menu_label = ttk.Label(self, text="Select a folder",font=APP_FONT(14))
         self.interactive_frame = ttk.Frame(self)
         self.dir_entry = ttk.Entry(
@@ -89,7 +124,10 @@ class MenuTab(ttk.Frame):
             command=self.valid_choosen_dir
         )
     
-    def askdir(self):
+
+    def askdir(self) -> None:
+        """Opens a tkinter filedialog to let the user select a folder
+        """
         dp = filedialog.askdirectory(
             title="Select a directory",
             initialdir=self.main_window.dirpath.get(),
@@ -98,13 +136,18 @@ class MenuTab(ttk.Frame):
         self.main_window.dirpath.set(dp)
 
     
-    def valid_choosen_dir(self):
+    def valid_choosen_dir(self) -> None:
+        """Checks if selected folder path is valid
+        """
         if os.path.isdir(self.main_window.dirpath.get()):
             self.main_window.analyse_dir()
         else:
+            #TODO: show error on gui
             raise Exception("not a dir")
 
-    def display(self):
+    def display(self) -> None:
+        f"""Displays the widgets of {self.__class__}
+        """
         self.pack()
         self.menu_label.pack(pady=20)
         self.interactive_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
@@ -114,14 +157,36 @@ class MenuTab(ttk.Frame):
 
 
 class StatsTab(tk.Frame):
+    """
+    Widget class for the statistics tab
+
+    Attributes:
+        main_window: (WimyfoApp)
+            reference to the root class of the app
+        
+        dirinfo (DirInfo):
+            holder of DirInfo class
+
+        ext_progbars_list: (list)
+            list of progressbar widgets for each extension in folder
+
+        ext_labels_list: (list)
+            list of labels widgets for each extension in folder
+
+        subdir_labels_list: (list)
+            list of labels widgets for each subfolder in folder
+    """
     def __init__(self, main_window, parent):
         super().__init__(parent)
+
+        #==ATTRIBUTES==
         self.main_window = main_window
         self.dirinfo = DirInfo()
         self.ext_progbars_list = []
         self.ext_labels_list = []
         self.subdir_labels_list = []
 
+        #==WIDGETS==
         # No Folder text
         self.placeholder_label = ttk.Label(self,text="Select a folder first",bootstyle=DANGER, font=APP_FONT(12))
         
@@ -138,12 +203,12 @@ class StatsTab(tk.Frame):
         self.scrollfiles_frame = ScrolledFrame(self.files_frame)
         self.scrollfolders_frame = ScrolledFrame(self.folders_frame)
 
-        # -- mainleft
+        # -- mainleft frame
         self.name_label = ttk.Label(self.mainleft_frame, textvariable=self.dirinfo.name, font=APP_FONT(10))
         self.path_label = ttk.Label(self.mainleft_frame, textvariable=self.dirinfo.path, font=APP_FONT(8))
         self.cat_label = ttk.Label(self.mainleft_frame, textvariable=self.dirinfo.ct_date, font=APP_FONT(8))
 
-        # -- mainright
+        # -- mainright frame
         self.totalsize_label = ttk.Label(self.mainright_frame, width=25, textvariable=self.dirinfo.total_size , font=APP_FONT(8))
         self.direct_subfolders_label = ttk.Label(
             self.mainright_frame,
@@ -160,7 +225,7 @@ class StatsTab(tk.Frame):
             font=APP_FONT(8)
         )
 
-        # -- files
+        # -- files frame
         self.files_label = ttk.Label(
             self.files_frame,
             textvariable=self.dirinfo.files_total,
@@ -170,7 +235,7 @@ class StatsTab(tk.Frame):
             font=APP_FONT(12)
         )
 
-        # -- folders
+        # -- folders frame
         self.subfolders_label = ttk.Label(
             self.folders_frame,
             textvariable=self.dirinfo.subdirs_total,
@@ -181,11 +246,13 @@ class StatsTab(tk.Frame):
         )
 
     
-    def add_details(self):
+    def add_details(self) -> None:
+        """Fills the details frame (files and subfolders statistics)
+        """
         # pb_themes = [DANGER,WARNING,PRIMARY,INFO,SUCCESS,LIGHT]
         # i = 0
 
-        # files progressbars
+        # add file extensions sorted by biggest (in size)
         for ext,files in self.dirinfo.content_files.items():
             label = ttk.Label(
                 self.scrollfiles_frame,
@@ -205,11 +272,11 @@ class StatsTab(tk.Frame):
             self.ext_progbars_list.append(progbar)
             # i = (i+1) % 6
         
-        # subfolders
+        # add button to previous folder
         previous_path = os.path.realpath(os.path.join(self.main_window.dirpath.get(), ".."))
         pp_label = tk.Button (
             self.scrollfolders_frame,
-            text=f"..",
+            text=f"-⬆️-",
             cursor="hand2",
             command=lambda: self.change_directory(previous_path),
             width=5,
@@ -217,6 +284,7 @@ class StatsTab(tk.Frame):
         )
         self.subdir_labels_list.append(pp_label)
 
+        # add all subfolders
         for directory in self.dirinfo.content_dirs:
             dirpath = directory.path
             temp_DI = DirInfo()
@@ -230,26 +298,62 @@ class StatsTab(tk.Frame):
             )
             self.subdir_labels_list.append(label)
     
+
     # TODO: make it dynamic (adapt when theme is changed)
     def dir_btn_theme_adapter(self):
         if self.main_window.style.theme.type == "dark":
             return "outline-light"
         return "outline-dark"
 
-    def change_directory(self, new_path):
+
+    def change_directory(self, new_path: str) -> None:
+        """Navigation system: Changes current path and restart an analyse on it
+        
+        Parameters:
+            new_path: (str)
+                path to the new folder
+        """
         self.main_window.dirpath.set(new_path)
         self.main_window.analyse_dir()
 
-    def get_subdir_relpath(self, subdir):
+
+    def get_subdir_relpath(self, subdir: str) -> str:
+        """Returns the relative path from subdir
+        
+        Parameters:
+            subdir: (str)
+                sub folders you want to get the relative path from
+        """
         return subdir.path.replace(self.main_window.dirpath.get(),"")
 
-    def get_ext_percentage(self, file_ext):
+    #TODO: handle division by 0
+    def get_ext_percentage(self, file_ext: str) -> float:
+        """Returns the percentage occupied by specifid extension
+                    
+        Parameters:
+            file_ext: (str)
+                file extension to get percentage from
+        """
         return round(self.dirinfo.content_files[file_ext][1] / self.dirinfo.get_total_size() * 100, 2)
 
-    def get_ext_filetotal(self, file_ext):
+
+    def get_ext_filetotal(self, file_ext: str) -> str:
+        """Returns a string countaining number of files from specifid extension
+
+        Parameters:
+            file_ext: (str)
+                file extension to get total from
+        """
         return f"{len(self.dirinfo.content_files[file_ext][0])} file(s)"
 
-    def get_ext_size(self, file_ext):
+
+    def get_ext_size(self, file_ext: str) -> str:
+        """Returns a string countaining the size in Bytes, KB, MB or GB of files from specifid extension
+                    
+        Parameters:
+            file_ext: (str)
+                file extension to get size from
+        """
         size = self.dirinfo.content_files[file_ext][1]
         return self.dirinfo.convert_bytes(size)
 
