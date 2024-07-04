@@ -6,7 +6,36 @@ from datetime import date
 class DirInfo():
     """
     A class that countains tkinter variables storing infos on provided directory path
+
+    Attributes:
+            name: (ttk.StringVar)
+                Name of the folder
+            
+            path: (ttk.StringVar)
+                Path of the folder
+
+            content_dirs: (ttk.StringVar)
+                Content of the folder and its subfolders returned by get_dir_content
+
+            total_size: (ttk.StringVar)
+                Total occupied size by the folder
+
+            ct_date: (ttk.StringVar)
+                Creation date of the folder
+            
+            direct_subdirs_total: (ttk.StringVar)
+                Number of direct subdirectory (subdirs that are directly in current folder and not themselves in a subfolder)
+
+            direct_files_total: (ttk.StringVar)
+                Number of direct file (files that are directly in current folder and not in a subfolder)
+
+            subdirs_total: (ttk.StringVar)
+                Total number of all subdirectory
+
+            files_total: (ttk.StringVar)
+                Total number of all files
     """
+
     def __init__(self):
         self.name = ttk.StringVar(value="None")
         self.path = ttk.StringVar(value="None")
@@ -19,7 +48,11 @@ class DirInfo():
         self.files_total = ttk.StringVar(value="None")
 
     def update(self, pth: str):
-        """Updates the tkinter variables based on arg 'pth'
+        """Updates the tkinter variables
+
+        Parameters:
+            pth: (str)
+                path to retrieve infos from
         """
         #----- Folder Name -----------------------
         self.name.set(f"Name: {os.path.basename(pth)}")
@@ -42,25 +75,49 @@ class DirInfo():
         #-----------------------------------------
         
 
-    def get_direct_files_total(self, pth: str):
+    def get_direct_files_total(self, pth: str) -> int:
+        """Returns number of direct files
+        
+        Parameters:
+            pth: (str)
+                path to get files number from
+        """
         return len(list(filter(lambda file: file.is_file(), os.scandir(pth))))
     
-    def get_direct_subdirs_total(self, pth: str):
+    def get_direct_subdirs_total(self, pth: str) -> int:
+        """Returns number of direct subdirectories
+        
+        Parameters:
+            pth: (str)
+                path to subdirectories number from
+        """
         return len(list(filter(lambda file: file.is_dir(), os.scandir(pth))))
 
-    def get_files_total(self):
+    def get_files_total(self) -> int:
+        """Returns the total number of all files
+        """
         ft = 0
         for _,filenames in self.content_files.items():
             ft += len(filenames[0])
         return ft
     
-    def get_total_size(self):
+    def get_total_size(self) -> int:
+        """Returns total size of current directory
+        ! only work after self.update has been ran
+        """
         ts = 0
         for _,size in self.content_files.values():
             ts += size
         return ts
 
     def convert_bytes(self, size: int) -> str:
+        """Returns the given size in a more user-friendly way.
+        the size is left to Bytes or converted to Kilobytes, Megabytes or Gigabytes depanding on given size
+        
+        Parameters: 
+            size: (int)
+                size to convert to string
+        """
         size_str = ""
         if size < 1024:
             size_str = f"{size}B"
@@ -72,14 +129,18 @@ class DirInfo():
             size_str = f"{round(size/134_217_728,2)}GB"
         return size_str
 
-    def get_dir_content(self, starting_pth: str):
-        """Gets info about specified directory path. Return a dict where keys are file extensions & values are list of files with key's extension.
-            Directories are also listed with 'dir' as key.
+    def get_dir_content(self, starting_pth: str) -> tuple[dict,dict]:
+        """Returns info about specified directory path in a dict where keys are file extensions & values are list of files with key's extension.
+        Directories are also listed with 'dir' as key.
+        Also return a copy of the extensions dict that is ordered by extension size
 
-            pth - the aboslute or relative path to retrieve info from
+            Parameters:
+                pth: (str)
+                    the aboslute or relative path to retrieve info from
 
-            Return     : {extension:[[DirEntry file1, DirEntry file2], total_size_of_extension]}
-            Return type: dict(str:list[list[DirEntry],int])
+            Return type    : dict(str:list[list[DirEntry],int])
+            Returned       : {'extension':[[<DirEntry 'filename'>], total_size_of_extension_in_bytes]}
+            Return example : {'.txt': [[<DirEntry 'mytext'>, <DirEntry 'notes'>], 2840]}
         """
         dirs = []
         ext_dict = {}

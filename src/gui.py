@@ -276,7 +276,7 @@ class StatsTab(tk.Frame):
         previous_path = os.path.realpath(os.path.join(self.main_window.dirpath.get(), ".."))
         pp_label = tk.Button (
             self.scrollfolders_frame,
-            text=f"-⬆️-",
+            text=f"⬅️",
             cursor="hand2",
             command=lambda: self.change_directory(previous_path),
             width=5,
@@ -359,29 +359,34 @@ class StatsTab(tk.Frame):
 
 
     def display(self, folder_selected):
-        """folder_selected:
-        False = no folder path selected
-        True = folder path selected
+        f"""Displays the widgets of {self.__class__}
+
+        Parameters:
+            folder_selected: (bool)
+                False = no folder path selected
+                True = folder path selected
         """
         if not folder_selected:
             self.pack()
             self.placeholder_label.pack(pady=15)
 
         else:
+            # delete no selected folder msg
             self.placeholder_label.pack_forget()
 
+            # container frames 
             self.maininfo_frame.pack(padx=10, pady=10, fill=X)
             self.details_frame.pack(expand=True, fill=BOTH)
             self.mainleft_frame.pack(fill=Y, side=LEFT, padx=5, pady=5)
             self.mainright_frame.pack(fill=Y, side=RIGHT, padx=5, pady=(0,5))
 
-            # self.files_frame.pack(expand=False, fill=BOTH, side=LEFT, padx=10, pady=10) old pack
-            # self.folders_frame.pack(fill=BOTH, side=RIGHT, padx=10, pady=10)
+            # details container frame
             self.files_frame.place(x=10,y=5,relheight=0.95,relwidth=0.63)
             self.folders_frame.place(relx=0.65,y=5,relheight=0.95,relwidth=0.34)
             self.scrollfiles_frame.pack(expand=True,fill=BOTH, padx=5)
             self.scrollfolders_frame.pack(expand=True,fill=BOTH, padx=5)
 
+            # main infos
             self.name_label.pack(fill=X, pady=(0,7))
             self.path_label.pack(fill=X, pady=(5,0))
             self.cat_label.pack(fill=X, pady=5)
@@ -389,26 +394,47 @@ class StatsTab(tk.Frame):
             self.direct_files_label.pack(fill=BOTH,expand=True)
             self.direct_subfolders_label.pack(fill=BOTH,expand=True)
 
+            # details
+            # - file extensions
             for label,progbar in list(zip(self.ext_labels_list,self.ext_progbars_list)):
                 label.pack(pady=(7,0), padx=25, fill=X)
                 progbar.pack(pady=(0,5), padx=(20,40) ,fill=X)
 
+            # - subdirectories
             self.subdir_labels_list[0].pack(pady=(10,8), padx=(20,40))
             for i in range(1, len(self.subdir_labels_list)):
                 self.subdir_labels_list[i].pack(pady=(10,8), padx=(20,40), fill=X)
             
+            # - details totals
             self.files_label.pack(side=BOTTOM, pady=10)
             self.subfolders_label.pack(side=BOTTOM, pady=10, padx=15)
 
 
 class SettingsTab(tk.Frame):
+    """
+    Widget class for the settings tab
+
+    Attributes:
+        main_window: (WimyfoApp)
+            reference to the root class of the app
+        
+        light_themes: (list)
+            list of light themes represented by strings 
+
+        dark_themes: (list)
+            list of dark themes represented by strings
+
+        
+    """
     def __init__(self, main_window, parent):
         super().__init__(parent)
+        #==ATTRIBUTES==
         self.main_window = main_window
         self.light_themes = ["cosmo","flatly","journal","litera","lumen","minty","pulse","sandstone","united",
                              "yeti","morph","simplex","cerculean"]
         self.dark_themes = ["solar","superhero","darkly","cyborg","vapor"]
 
+        #==WIDGETS==
         self.main_frame = ttk.Labelframe(self, text="SELECT THEMES")
         self.themes_frame = ScrolledFrame(self.main_frame)
 
@@ -416,18 +442,25 @@ class SettingsTab(tk.Frame):
         self.dark_frame = ttk.Frame(self.themes_frame)
 
         self.light_label = ttk.Label(self.light_frame, text="Light themes", font=APP_FONT(9))
-        # self.sep = ttk.Separator(self.themes_frame)
         self.dark_label = ttk.Label(self.dark_frame, text="Dark themes", font=APP_FONT(9))
 
-
+        #==DISPLAY==
         self.display()
 
 
     def change_theme(self, new_theme):
+        """Change the app theme to a new one
+
+        Parameters:
+            new_theme: (str)
+                the new theme to change to
+        """
         return lambda: self.main_window.style.theme_use(new_theme)
 
 
     def display(self):
+        f"""Displays the widgets of {self.__class__}
+        """
         self.main_frame.place(relx=0.5, rely=0.5, anchor=CENTER, relheight=0.8, relwidth=0.7 )
         self.themes_frame.pack(fill=BOTH, expand=True)
         self.light_frame.pack(side=LEFT,fill=BOTH,expand=True)
@@ -436,11 +469,10 @@ class SettingsTab(tk.Frame):
         self.light_label.pack(anchor=CENTER, pady=(20,25))
         for theme in self.light_themes:
             theme_label = ttk.Button(self.light_frame, text=theme, width=10, cursor="hand2", command=self.change_theme(theme)).pack(anchor=CENTER,pady=7)
-        # self.sep.pack()
+        
         self.dark_label.pack(anchor=CENTER, pady=(20,25))
         for theme in self.dark_themes:
             theme_label = ttk.Button(self.dark_frame, text=theme, width=10, cursor="hand2", command=self.change_theme(theme)).pack(anchor=CENTER,pady=7)
-        # self.tree_view.pack()
 
 
 
