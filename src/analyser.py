@@ -138,7 +138,7 @@ class DirInfo():
                 pth: (str)
                     the aboslute or relative path to retrieve info from
 
-            Return type    : dict(str:list[list[DirEntry],int])
+            Return type    : tuple[ dict(str:list[list[DirEntry],int]), dict) , dict(str:list[list[DirEntry],int]]
             Returned       : {'extension':[[<DirEntry 'filename'>], total_size_of_extension_in_bytes]}
             Return example : {'.txt': [[<DirEntry 'mytext'>, <DirEntry 'notes'>], 2840]}
         """
@@ -166,4 +166,6 @@ class DirInfo():
         
         rec_gdc(starting_pth, dirs, ext_dict)
         ordered_ext_dict = dict(zip(ext_dict.keys(), sorted(ext_dict.values(), key=lambda l: l[1], reverse=True)))
+        print(ordered_ext_dict)
+        print("")
         return dirs, ordered_ext_dict
